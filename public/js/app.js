@@ -1,34 +1,49 @@
 const socket = io()
 
-socket.on('new-peer', (data) => {
-  const peer = document.createElement('h3')
-  peer.innerHTML = JSON.stringify(data)
 
-  document.body.appendChild(peer)
-})
+const UI = {
 
-socket.on('introduction', (data) => {
-  console.log(`INTRODUCTION: ${data}`)
+  render: function (state)  {
+    const playerTemplate = `
+    <div id="${state.id}">
+      <div id="cup">
+        <span id="name">${state.name || state.id}</span>
+        <span id="dice1">${state.cupDice[0]}</span>
+        <span id="dice2">${state.cupDice[1]} </span>
+        <span id="dice3">${state.cupDice[2]} </span>
+      </div>
+      <div id="taken">
+        <span id="dice1">${state.dice[0] || ""}</span>
+        <span id="dice2">${state.dice[1] || ""} </span>
+        <span id="dice3">${state.dice[2] || ""} </span>
+      </div>
+    </div>
+    `
 
-  const peer = document.createElement('h3')
-  peer.innerHTML = JSON.stringify(data)
+    const oldView = document.getElementById(state.id)
+    const newView = this.create(playerTemplate)
 
-  document.body.appendChild(peer)
-})
+    if (!oldView) {
+      console.log("old")
+      document.body.appendChild(newView)
+    } else {
+      console.log("new")
+      oldView.parentNode.replaceChild(newView, oldView);
+    }
+  },
 
-const usernameInput = document.getElementById('username')
-const usernameSave = document.getElementById('save')
-usernameSave.addEventListener('click', (e) => {
-  console.log(`CLICK: ${usernameInput.value}`)
-  e.preventDefault()
+  create: function (htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
 
-  socket.emit('introduction', usernameInput.value)
-})
+    return div.firstChild;
+  }
+}
 
-const rollDiceButton = document.getElementById('save')
-rollDiceButton.addEventListener('click', (e) => {
-  console.log(`CLICK: ${usernameInput.value}`)
-  e.preventDefault()
+socket.on('syncState', (state) => {
+  console.log(state)
+
+  UI.render(state)
 })
 
 class Client {
@@ -55,6 +70,48 @@ class Client {
     console.log('Client: done')
     this.socket.emit('done')
   }
+
+  saveName (name) {
+    console.log('Client: saveName')
+    this.socket.emit('saveName', name)
+  }
 }
 
-const client = Client(socket)
+const client = new Client(socket)
+
+const rollDiceButton = document.getElementById('rollDice')
+
+rollDiceButton.addEventListener('click', (e) => {
+  console.log('rollDice clicked')
+
+  client.rollDice()
+})
+
+const liftCupButton = document.getElementById('liftCup')
+
+liftCupButton.addEventListener('click', (e) => {
+  console.log('liftCup clicked')
+
+  client.liftCup()
+})
+
+const doneButton = document.getElementById('done')
+
+doneButton.addEventListener('click', (e) => {
+  console.log('done clicked')
+
+  client.done()
+})
+
+const usernameInput = document.getElementById('username')
+const usernameSave = document.getElementById('save')
+
+usernameSave.addEventListener('click', (e) => {
+  e.preventDefault()
+
+  const username = usernameInput.value
+
+  console.log(`CLICK: ${username}`)
+
+  client.saveName(username)
+})

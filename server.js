@@ -13,13 +13,36 @@ const server = http.createServer(app)
 const io = socket(server)
 const port = process.env.PORT || 5000
 
-const game = Game()
+const game = new Game()
 
 io.on('connect', (socket) => {
   const clientId = socket.client.id
   console.log(`Client connected with id: ${clientId}`)
 
-  game.addPlayer(Player(socket))
+  const player = new Player(clientId, io)
+
+  game.addPlayer(player)
+  player.sync()
+
+  socket.on('roll-dice', () => {
+    game.findPlayer(clientId).rollDice()
+  })
+
+  socket.on('lift-cup', () => {
+    game.findPlayer(clientId).liftCup()
+  })
+
+  socket.on('roll-dice', () => {
+    game.findPlayer(clientId).rollDice()
+  })
+
+  socket.on('done', () => {
+    game.findPlayer(clientId).setDone()
+  })
+
+  socket.on('saveName', (name) => {
+    game.findPlayer(clientId).saveName(name)
+  })
 })
 
 app.use(
