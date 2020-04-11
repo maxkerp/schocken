@@ -1,49 +1,116 @@
-const socket = io()
+import { html, Component, render } from 'https://unpkg.com/htm/preact/standalone.module.js';
 
-
-const UI = {
-
-  render: function (state)  {
-    const playerTemplate = `
-    <div id="${state.id}">
-      <div id="cup">
-        <span id="name">${state.name || state.id}</span>
-        <span id="dice1">${state.cupDice[0]}</span>
-        <span id="dice2">${state.cupDice[1]} </span>
-        <span id="dice3">${state.cupDice[2]} </span>
-      </div>
-      <div id="taken">
-        <span id="dice1">${state.dice[0] || ""}</span>
-        <span id="dice2">${state.dice[1] || ""} </span>
-        <span id="dice3">${state.dice[2] || ""} </span>
-      </div>
-    </div>
-    `
-
-    const oldView = document.getElementById(state.id)
-    const newView = this.create(playerTemplate)
-
-    if (!oldView) {
-      console.log("old")
-      document.body.appendChild(newView)
-    } else {
-      console.log("new")
-      oldView.parentNode.replaceChild(newView, oldView);
-    }
-  },
-
-  create: function (htmlString) {
-    var div = document.createElement('div');
-    div.innerHTML = htmlString.trim();
-
-    return div.firstChild;
+class Player extends Component {
+  pickDice (index) {
+    client.pickDice(index)
   }
+
+  putDice (index) {
+    client.putDice(index)
+  }
+
+  cupOrDices () {
+    if (this.props.cupState === "down") {
+      return html`
+        <div class="card-image">
+          <figure class="image is-4by3">
+            <img src="/img/cup.jpg" alt="cup image">
+          </figure>
+        </div>
+      `
+    } else {
+      return html`
+        <div class="card-content">
+          <nav class="level">
+            <div class="level-item has-text-centered" onClick=${() => { this.pickDice(0) }}>
+              <div>
+                ${this.dice(this.props.cupDice[0])}
+              </div>
+            </div>
+            <div class="level-item has-text-centered" onClick=${() => { this.pickDice(1) }}>
+              <div>
+                ${this.dice(this.props.cupDice[1])}
+              </div>
+            </div>
+            <div class="level-item has-text-centered" onClick=${() => { this.pickDice(2) }}>
+              <div>
+                ${this.dice(this.props.cupDice[2])}
+              </div>
+            </div>
+          </nav>
+        </div>
+      `
+    }
+  }
+
+  dice (eyes) {
+    if (eyes) {
+      return html`<div><img src="/img/dice${eyes}.png" alt="cup image"></div>`
+    }
+  }
+
+  render({ name , dice, cupDice, cupState, done }) {
+    return html`
+      <div id="player" class="tile is-parent">
+        <div class="tile is-child">
+
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title is-centered">
+                ${this.props.name || this.props.id}
+              </p>
+            </header>
+
+            ${ this.cupOrDices() }
+
+            <div class="card-content">
+              <nav class="level">
+                <div class="level-item has-text-centered" onClick=${() => { this.putDice(0) }}>
+                  <div>
+                    ${ this.dice(this.props.dice[0]) }
+                  </div>
+                </div>
+                <div class="level-item has-text-centered" onClick=${() => { this.putDice(1) }}>
+                  <div>
+                    ${ this.dice(this.props.dice[1]) }
+                  </div>
+                </div>
+                <div class="level-item has-text-centered" onClick=${() => { this.putDice(2) }}>
+                  <div>
+                    ${ this.dice(this.props.dice[2]) }
+                  </div>
+                </div>
+              </nav>
+            </div>
+
+
+            <div class="content">
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    `;
+  }
+
 }
+
+const socket = io()
 
 socket.on('syncState', (state) => {
   console.log(state)
 
-  UI.render(state)
+  let playerNode = document.getElementById(state.id)
+  let playersNode = document.getElementById('players-wrapper')
+
+  if (!playerNode) {
+    playerNode = document.createElement('div')
+    playerNode.id = state.id
+    playersNode.appendChild(playerNode)
+  }
+
+  render(html`<${Player} ...${state}/>`, playerNode);
 })
 
 class Client {
@@ -61,9 +128,14 @@ class Client {
     this.socket.emit('lift-cup')
   }
 
-  pickDice () {
+  pickDice (index) {
     console.log('Client: pick-dice')
-    this.socket.emit('pick-dice')
+    this.socket.emit('pick-dice', index)
+  }
+
+  putDice (index) {
+    console.log('Client: put-dice')
+    this.socket.emit('put-dice', index)
   }
 
   done () {

@@ -32,8 +32,12 @@ io.on('connect', (socket) => {
     game.findPlayer(clientId).liftCup()
   })
 
-  socket.on('roll-dice', () => {
-    game.findPlayer(clientId).rollDice()
+  socket.on('pick-dice', (index) => {
+    game.findPlayer(clientId).pickDice(index)
+  })
+
+  socket.on('put-dice', (index) => {
+    game.findPlayer(clientId).putDice(index)
   })
 
   socket.on('done', () => {

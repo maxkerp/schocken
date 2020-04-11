@@ -1,29 +1,55 @@
 <!DOCTYPE html>
 <html>
- <head>
-   <meta charset="UTF-8">
-   <title>title</title>
- </head>
- <body>
-   <h1>Schocken.at</h1>
-   <p>
-    <label for="username">Username</label>
-    <input id="username" name="username" type="text">
-    <input id="save" name="save" type="submit">
-   </p>
+  <head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <p class="navbar-item title">
+          Schocken.af
+        </p>
+      </div>
+    </nav>
 
-   <div id="controls">
-      <button id="rollDice">Würfeln</button>
-      <button id="liftCup">Becher heben</button>
-      <button id="done">Fertig</button>
-   </div>
+    <section class="section">
+      <div class="container">
+        <nav id="controls" class="level">
+          <div class="level-item has-text-centered">
+            <div>
+              <button id="rollDice" class="button is-medium">Würfeln</button>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <button id="liftCup" class="button is-medium">Becher heben</button>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <button id="done" class="button is-medium">Fertig</button>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div class="field has-addons">
+              <div class="control">
+                <input id="username" class="input is-medium" type="text" placeholder="Username">
+              </div>
+              <div class="control">
+                <input id="save" class="button is-medium" name="save" type="submit" value="Speichern">
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </section>
 
-   <div id="overview">
+    <div id="players-wrapper" class="tile is-ancestor">
+    </div>
 
-   </div>
-
-   <script src="/socket.io/socket.io.js"></script>
-   <script src="/js/app.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/app.js"></script>
  </body>
 </html>
-
