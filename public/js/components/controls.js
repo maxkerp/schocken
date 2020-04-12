@@ -42,32 +42,7 @@ class Controls extends Component {
           </div>
         </div>
       </nav >
-
-      <nav class="level">
-        <div class="level-item has-text-centered">
-          <div>
-            <button id="rollDice" class="button is-medium" onClick=${ () => this.rollDice() }>
-              Würfeln
-            </button>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <button id="liftCup" class="button is-medium" onClick=${ () => this.liftCup() }>
-              Becher heben
-            </button>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <button id="done" class="button is-medium" onClick=${ () => this.done() }>
-              Fertig
-            </button>
-          </div>
-        </div>
-      </nav>
-
-  `
+    `
   }
 }
 

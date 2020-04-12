@@ -12,8 +12,8 @@ class Player extends Component {
   cupOrDices () {
     if (this.props.cupState === "down") {
       return html`
-        <div class="card-image">
-          <figure class="image is-4by3">
+        <div class="card-image" onClick=${() => { this.props.client.liftCup() }}>
+          <figure class="image is-4by3" >
             <img src="/img/cup.jpg" alt="cup image"/>
           </figure>
         </div>
@@ -67,6 +67,10 @@ class Player extends Component {
             </div>
           </nav>
         </div>
+
+        <footer class="card-footer">
+          <a href="#" onClick=${ () => this.props.client.rollDice() }class="card-footer-item is-size-4 has-text-weight-bold has-text-black">Würfeln</a>
+        </footer>
       </div>
     `;
   }

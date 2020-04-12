@@ -20,6 +20,7 @@ io.on('connect', (socket) => {
   console.log(`Client connected with id: ${clientId}`)
 
   const player = new Player(clientId)
+  player.name = "Spieler" + (game.players.length + 1)
 
   game.addPlayer(player)
   game.sync()
